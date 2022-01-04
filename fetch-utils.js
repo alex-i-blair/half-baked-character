@@ -3,19 +3,31 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsI
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-export async function createCharacter(character){
-    const newCharacter = {
-        ...character, 
-        user_id: client.auth.user().id, 
-    };
-
-    // use the newCharacter to create a single new character for this user in supabase
+export async function createDefaultCharacter(){
+    
+    const response = await client
+        .from('characters')
+        .insert({
+            head: '',
+            middle: '',
+            bottom: '',
+            catchphrases: []
+        })
+        .single();
     return checkError(response);
+    // use the newCharacter to create a single new character for this user in supabase
 }
+
+
 
 export async function updateHead(value){
     const currentUserId = client.auth.user().id;
 
+    const response = await client
+        .from('characters')
+        .update({ head: value })
+        .match({ user_id: currentUserId })
+        .single();
     // in supabase, update the head property
     // for the character whose user_id match's the currently logged in user's id
 
@@ -25,7 +37,11 @@ export async function updateHead(value){
 
 export async function updateMiddle(value){
     const currentUserId = client.auth.user().id;
-
+    const response = await client
+        .from('characters')
+        .update({ middle: value })
+        .match({ user_id: currentUserId })
+        .single();
     // in supabase, update the middle property
     // for the character whose user_id match's the currently logged in user's id
 
@@ -35,15 +51,24 @@ export async function updateMiddle(value){
 
 export async function updateBottom(value){
     const currentUserId = client.auth.user().id;
-
+    const response = await client
+        .from('characters')
+        .update({ bottom: value })
+        .match({ user_id: currentUserId })
+        .single();
     // in supabase, update the bottom property
     // for the character whose user_id match's the currently logged in user's id
 
     return checkError(response);    
 }
 
-export async function updateChatchphrases(value){
+export async function updateCatchphrases(value){
     const currentUserId = client.auth.user().id;
+    const response = await client
+        .from('characters')
+        .update({ catchphrases: value })
+        .match({ user_id: currentUserId })
+        .single();
 
     // in supabase, update the catchphrases property
     // for the character whose user_id match's the currently logged in user's id
@@ -89,9 +114,9 @@ export async function checkAuth() {
     if (!user) location.replace('../'); 
 }
 
-export async function redirectToBuild() {
+export async function redirectToCharacter() {
     if (await getUser()) {
-        location.replace('./build');
+        location.replace('./character');
     }
 }
 
