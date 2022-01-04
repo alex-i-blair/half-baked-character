@@ -6,7 +6,7 @@ import {
     updateBottom,
     updateHead,
     updateMiddle,
-    updateChatchphrases
+    updateCatchphrases
 } from '../fetch-utils.js';
 
 checkAuth();
@@ -30,46 +30,62 @@ let bottomCount = 0;
 
 headDropdown.addEventListener('change', async() => {
     // increment the correct count in state
+    headCount++;
 
     // update the head in supabase with the correct data
-    refreshData();
+    const updatedHead = await updateHead(headDropdown.value);
+    refreshData(updatedHead);
 });
 
 
 middleDropdown.addEventListener('change', async() => {
     // increment the correct count in state
-    
+    middleCount++;
+
     // update the middle in supabase with the correct data
-    refreshData();
+    const updatedMiddle = await updateMiddle(middleDropdown.value);
+    refreshData(updatedMiddle);
 });
 
 
 bottomDropdown.addEventListener('change', async() => {
     // increment the correct count in state
-    
+    bottomCount++;
+
     // update the bottom in supabase with the correct data
-    refreshData();
+    const updatedBottom = await updateBottom(bottomDropdown.value);
+    refreshData(updatedBottom);
 });
 
 catchphraseButton.addEventListener('click', async() => {
-    catchphraseInput.value = '';
-
-    // go fetch the old catch phrases
     
+    // go fetch the old catch phrases
+    const newCatchphrase = catchphraseInput.value;
+    const character = await getCharacter();
+    character.catchphrase.push(newCatchphrase);
+    const updatedCatchphrasesArray = await updateCatchphrases(character.catchphrase);
     // update the catchphrases array locally by pushing the new catchphrase into the old array
-
+    
     // update the catchphrases in supabase by passing the mutated array to the updateCatchphrases function
-    refreshData();
+    refreshData(updatedCatchphrasesArray);
+    catchphraseInput.value = '';
 });
 
 window.addEventListener('load', async() => {
     let character;
     // on load, attempt to fetch this user's character
-
+    character = await getCharacter();
     // if this user turns out not to have a character
+    if (!character) {
+        const newCharacter = await createCharacter([]);
+        character = newCharacter;
+        
+    } else {
+        
+    }
     // create a new character with correct defaults for all properties (head, middle, bottom, catchphrases)
     // and put the character's catchphrases in state (we'll need to hold onto them for an interesting reason);
-
+    
     // then call the refreshData function to set the DOM with the updated data
     refreshData();
 });
