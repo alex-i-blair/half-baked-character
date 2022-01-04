@@ -2,7 +2,7 @@ import {
     checkAuth, 
     getCharacter,
     logout, 
-    createCharacter,
+    createDefaultCharacter,
     updateBottom,
     updateHead,
     updateMiddle,
@@ -59,30 +59,25 @@ bottomDropdown.addEventListener('change', async() => {
 
 catchphraseButton.addEventListener('click', async() => {
     
+    
     // go fetch the old catch phrases
-    const newCatchphrase = catchphraseInput.value;
     const character = await getCharacter();
-    character.catchphrase.push(newCatchphrase);
-    const updatedCatchphrasesArray = await updateCatchphrases(character.catchphrase);
+    character.catchphrases.push(catchphraseInput.value);
+    await updateCatchphrases(character.catchphrases);
     // update the catchphrases array locally by pushing the new catchphrase into the old array
     
     // update the catchphrases in supabase by passing the mutated array to the updateCatchphrases function
-    refreshData(updatedCatchphrasesArray);
+    refreshData();
     catchphraseInput.value = '';
 });
 
 window.addEventListener('load', async() => {
-    let character;
+    
     // on load, attempt to fetch this user's character
-    character = await getCharacter();
+    const character = await getCharacter();
     // if this user turns out not to have a character
     if (!character) {
-        await createCharacter({
-            head: '',
-            middle: '',
-            bottom: '',
-            catchphrases: []
-        });
+        await createDefaultCharacter();
         
         
     }
@@ -119,9 +114,10 @@ async function fetchAndDisplayCharacter() {
         bottomEl.style.backgroundImage = `url(../assets/${character.bottom}-pants.png)`;
     }
     // loop through catchphrases and display them to the dom (clearing out old dom if necessary)
+    catchphrasesEl.textContent = '';
     for (let phrase of character.catchphrases) {
         const phraseEl = document.createElement('p');
-        phraseEl.classList.add('catchphrases');
+        // phraseEl.classList.add('catchphrases');
         phraseEl.textContent = phrase;
         catchphrasesEl.append(phraseEl);
     }
