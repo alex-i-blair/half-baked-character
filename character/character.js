@@ -18,7 +18,7 @@ const headEl = document.getElementById('head');
 const middleEl = document.getElementById('middle');
 const bottomEl = document.getElementById('bottom');
 const reportEl = document.getElementById('report');
-const chatchphrasesEl = document.getElementById('chatchphrases');
+const catchphrasesEl = document.getElementById('catchphrases');
 const catchphraseInput = document.getElementById('catchphrase-input');
 const catchphraseButton = document.getElementById('catchphrase-button');
 const logoutButton = document.getElementById('logout');
@@ -77,10 +77,13 @@ window.addEventListener('load', async() => {
     character = await getCharacter();
     // if this user turns out not to have a character
     if (!character) {
-        const newCharacter = await createCharacter([]);
-        character = newCharacter;
+        await createCharacter({
+            head: '',
+            middle: '',
+            bottom: '',
+            catchphrases: []
+        });
         
-    } else {
         
     }
     // create a new character with correct defaults for all properties (head, middle, bottom, catchphrases)
@@ -101,13 +104,27 @@ function displayStats() {
 
 
 async function fetchAndDisplayCharacter() {
-    // fetch the caracter from supabase
-
+    // fetch the character from supabase
+    const character = await getCharacter();
     // if the character has a head, display the head in the dom
+    if (character.head) {
+        headEl.style.backgroundImage = `url(../assets/${character.head}-head.png)`;
+    }
     // if the character has a middle, display the middle in the dom
+    if (character.middle) {
+        middleEl.style.backgroundImage = `url(../assets/${character.middle}-middle.png)`;
+    }
     // if the character has a pants, display the pants in the dom
-    
+    if (character.bottom) {
+        bottomEl.style.backgroundImage = `url(../assets/${character.bottom}-pants.png)`;
+    }
     // loop through catchphrases and display them to the dom (clearing out old dom if necessary)
+    for (let phrase of character.catchphrases) {
+        const phraseEl = document.createElement('p');
+        phraseEl.classList.add('catchphrases');
+        phraseEl.textContent = phrase;
+        catchphrasesEl.append(phraseEl);
+    }
 }
 
 function refreshData() {

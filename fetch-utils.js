@@ -7,7 +7,7 @@ export async function createCharacter(character){
     
     const response = await client
         .from('characters')
-        .insert({ character, })
+        .insert([character])
         .single();
     return checkError(response);
     // use the newCharacter to create a single new character for this user in supabase
@@ -20,7 +20,7 @@ export async function updateHead(value){
 
     const response = await client
         .from('characters')
-        .update({ head_id: value })
+        .update({ head: value })
         .match({ user_id: currentUserId })
         .single();
     // in supabase, update the head property
@@ -34,7 +34,7 @@ export async function updateMiddle(value){
     const currentUserId = client.auth.user().id;
     const response = await client
         .from('characters')
-        .update({ middle_id: value })
+        .update({ middle: value })
         .match({ user_id: currentUserId })
         .single();
     // in supabase, update the middle property
@@ -48,7 +48,7 @@ export async function updateBottom(value){
     const currentUserId = client.auth.user().id;
     const response = await client
         .from('characters')
-        .update({ bottom_id: value })
+        .update({ bottom: value })
         .match({ user_id: currentUserId })
         .single();
     // in supabase, update the bottom property
